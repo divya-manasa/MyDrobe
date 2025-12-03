@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  smartstyle-backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./smartstyle.db
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY}
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - SERPAPI_KEY=${SERPAPI_KEY}
+      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
+    volumes:
+      - ./backend:/app
+      - smartstyle-data:/app/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  smartstyle-data:
