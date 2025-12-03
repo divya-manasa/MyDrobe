@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Outfit Generator | SmartStyle AI</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .gender-selector { display: flex; gap: 1em; margin-bottom: 1.5em; }
+    .gender-btn { padding: 0.75em 2em; border: 2px solid #ddd; border-radius: 10px; background: white; cursor: pointer; font-size: 1em; transition: all 0.3s; }
+    .gender-btn.active { background: #19c97f; color: white; border-color: #19c97f; }
+    .gender-btn:hover { border-color: #19c97f; }
+    .img-preview { max-width: 400px; border-radius: 14px; box-shadow: 0 2px 16px rgba(0,0,0,0.1); margin: 1em 0; }
+    .alert { padding: 0.75em 1em; border-radius: 8px; margin: 1em 0; }
+    .badge-ok { background: #28c95f; color: #fff; border-radius: 8px; padding: 4px 12px; font-size: 0.9em; }
+    .badge-missing { background: #e04141; color: #fff; border-radius: 8px; padding: 4px 12px; font-size: 0.9em; }
+    .voice-active { background: #ff4444 !important; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .product-card { border: 1px solid #e0e0e0; border-radius: 12px; padding: 1em; width: 280px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .product-card img { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
+    .product-card .store-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; font-weight: 600; margin-top: 0.5em; }
+    .store-myntra { background: #ffc1cc; color: #ff3f6c; }
+    .store-amazon { background: #ffd966; color: #ff9900; }
+    .store-flipkart { background: #cce5ff; color: #047bd5; }
+    .store-ajio { background: #fff4d9; color: #f0ad4e; }
+    .store-meesho { background: #f3e5f5; color: #9c27b0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+      <ul class="navbar-links">
+        <li><a href="/dashboard.html">Dashboard</a></li>
+        <li><a href="/wardrobe.html">Wardrobe</a></li>
+        <li><a href="/prompt-outfit.html">AI Outfit Generator</a></li>
+        <li><a href="#" id="logout-btn">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <h1>🎨 AI Outfit Generator with SDXL</h1>
+    <p style="font-size: 1.05em; color: #666; margin-bottom: 1.5em;">
+      Select your gender, describe your desired outfit, and let AI create the perfect look for you!
+    </p>
+    
+    <div class="card" style="margin-bottom: 1.5em;">
+      <!-- Gender Selection -->
+      <label class="form-label"><b>Select Gender</b></label>
+      <div class="gender-selector">
+        <button class="gender-btn active" data-gender="male">👔 Male</button>
+        <button class="gender-btn" data-gender="female">👗 Female</button>
+      </div>
+      
+      <!-- Outfit Prompt -->
+      <label for="prompt-input" class="form-label"><b>Your Desired Outfit</b></label>
+      <textarea id="prompt-input" placeholder="Ex: casual summer outfit with sneakers" rows="3" class="form-control"></textarea>
+      
+      <div style="margin-top: 1em; display: flex; gap: 0.75em; flex-wrap: wrap;">
+        <button class="btn btn-secondary" id="voice-btn">🎤 Voice Input</button>
+        <button class="btn btn-primary" id="generate-btn">✨ Generate Outfit</button>
+      </div>
+      
+      <div id="voice-status" style="margin-top: 0.5em; font-size: 0.9em; color: #666; display: none;">
+        🎙️ Listening...
+      </div>
+    </div>
+    
+    <div id="output"></div>
+  </div>
+  
+  <script src="/js/main.js"></script>
+  <script src="/js/prompt-outfit.js"></script>
+</body>
+</html>

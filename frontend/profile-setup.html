@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 600px; margin-top: 3rem;">
+        <div class="card">
+            <h1 class="text-center">Complete Your Profile</h1>
+            <p class="text-center mb-3">Help us personalize your experience</p>
+            
+            <form id="profile-form" onsubmit="handleProfileSetup(event)">
+                <div class="form-group">
+                    <label class="form-label" for="body_shape">Body Shape</label>
+                    <select id="body_shape" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="hourglass">Hourglass</option>
+                        <option value="pear">Pear</option>
+                        <option value="apple">Apple</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="inverted_triangle">Inverted Triangle</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="skin_tone">Skin Tone</label>
+                    <select id="skin_tone" class="form-control">
+                        <option value="">Select...</option>
+                        <option value="fair">Fair</option>
+                        <option value="light">Light</option>
+                        <option value="medium">Medium</option>
+                        <option value="olive">Olive</option>
+                        <option value="tan">Tan</option>
+                        <option value="deep">Deep</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="location">Location (City)</label>
+                    <input type="text" id="location" class="form-control" placeholder="New York">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Complete Setup</button>
+            </form>
+            
+            <p class="text-center mt-2">
+                <a href="/dashboard.html">Skip for now</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/auth.js"></script>
+</body>
+</html>

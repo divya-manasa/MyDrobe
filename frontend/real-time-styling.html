@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Styling - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Real-Time Styling Intelligence</h1>
+        
+        <div id="weather-alert" class="card"></div>
+        
+        <div class="card">
+            <h3>Today's Styling Recommendations</h3>
+            <div id="daily-recommendations"></div>
+        </div>
+        
+        <div class="card">
+            <h3>Fashion Trends in Your Area</h3>
+            <button class="btn btn-primary" onclick="loadTrends()">Load Current Trends</button>
+            <div id="trends-container" class="mt-2"></div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function loadWeatherStyling() {
+            SmartStyle.showLoading();
+            try {
+                const user = SmartStyle.getUser();
+                const location = user?.location || 'New York';
+                
+                // Get weather and outfit suggestions
+                const data = await SmartStyle.apiRequest('/api/outfit/occasion-suggestions', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        occasion: 'Casual',
+                        location: location
+                    })
+                });
+                
+                displayWeatherAlert(data.weather);
+                displayRecommendations(data.suggestions);
+            } catch (error) {
+                SmartStyle.showAlert('Failed to load styling intelligence', 'error');
+            } finally {
+                SmartStyle.hideLoading();
+            }
+        }
+        
+        function displayWeatherAlert(weather) {
+            const container = document.getElementById('weather-alert');
+            if (!weather) return;
+            
+            let alertMessage = '';
+            let alertClass = 'alert-info';
+            
+            if (weather.main === 'Rain') {
+                alertMessage = `🌧️ Rain expected! Switch to waterproof shoes and bring an umbrella.`;
+                alertClass = 'alert-info';
+            } else if (weather.temperature > 30) {
+                alertMessage = `☀️ Hot day ahead (${Math.round(weather.temperature)}°C)! Wear light, breathable fabrics.`;
+                alertClass = 'alert-info';
+            } else if (weather.temperature < 10) {
+                alertMessage = `❄️ Cold weather (${Math.round(weather.temperature)}°C)! Layer up and wear warm outerwear.`;
+                alertClass = 'alert-info';
+            } else {
+                alertMessage = `🌤️ Pleasant weather (${Math.round(weather.temperature)}°C). Perfect for most outfits!`;
+            }
+            
+            container.innerHTML = `
+                <div class="${alertClass}">
+                    <h3>Weather Alert</h3>
+                    <p>${alertMessage}</p>
+                    <p><strong>Current:</strong> ${weather.description}, ${Math.round(weather.temperature)}°C, Humidity: ${weather.humidity}%</p>
+                </div>
+            `;
+        }
+        
+        function displayRecommendations(suggestions) {
+            const container = document.getElementById('daily-recommendations');
+            if (!suggestions || suggestions.length === 0) {
+                container.innerHTML = '<p>Add items to your wardrobe to get personalized recommendations!</p>';
+                return;
+            }
+            
+            let html = '<div class="grid grid-2">';
+            suggestions.forEach(outfit => {
+                html += `
+                    <div class="card">
+                        <h4>${outfit.name}</h4>
+                        <p>${outfit.reasoning}</p>
+                        <p><strong>Score:</strong> ${outfit.style_score}/100</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        async function loadTrends() {
+            SmartStyle.showLoading();
+            try {
+                const data = await SmartStyle.apiRequest('/api/shopping/trends');
+                displayTrends(data.trends);
+            } catch (error) {
+                SmartStyle.showAlert('Failed to load trends', 'error');
+            } finally {
+                SmartStyle.hideLoading();
+            }
+        }
+        
+        function displayTrends(trends) {
+            const container = document.getElementById('trends-container');
+            if (!trends || trends.length === 0) {
+                container.innerHTML = '<p>No trends available at the moment.</p>';
+                return;
+            }
+            
+            let html = '';
+            trends.forEach(trend => {
+                html += `
+                    <div class="card mt-2">
+                        <h4>${trend.title}</h4>
+                        <p>${trend.snippet}</p>
+                        <a href="${trend.link}" target="_blank" class="btn btn-outline mt-1">Read More</a>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWeatherStyling();
+        });
+    </script>
+</body>
+</html>

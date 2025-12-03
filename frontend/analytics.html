@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Virtual Closet Analytics Dashboard</h1>
+        
+        <div id="analytics-summary"></div>
+        
+        <div class="grid grid-2 mt-3">
+            <div class="card">
+                <h3>Category Distribution</h3>
+                nvas id="category-chart" width="400" height="300300"></canvas>
+            </div>
+            
+            <div class="card">
+                <h3>Color Distribution</h3>
+                nvas id="color-chart" width="h="400" height="300"></canvas>
+            </div>
+        </div>
+        
+        <div id="most-worn" class="mt-3"></div>
+        <div id="least-worn" class="mt-3"></div>
+        <div id="ai-insights" class="mt-3"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/charts.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalyticsDashboard();
+        });
+    </script>
+</body>
+</html>

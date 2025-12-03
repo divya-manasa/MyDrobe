@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Shopping Assistant | SmartStyle AI</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .gap-card {
+      background: #fff3cd;
+      border-left: 4px solid #ff9800;
+      padding: 1em;
+      margin: 1em 0;
+      border-radius: 8px;
+    }
+    .product-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.2em;
+      width: 320px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .product-card img {
+      width: 100%;
+      border-radius: 8px;
+      height: 220px;
+      object-fit: cover;
+    }
+    .match-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #19c97f;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .eco-badge {
+      display: inline-block;
+      background: #4caf50;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-top: 0.5em;
+    }
+    .match-reasons {
+      list-style: none;
+      padding: 0;
+      margin: 0.5em 0;
+      font-size: 0.9em;
+      color: #666;
+    }
+    .match-reasons li {
+      padding: 0.25em 0;
+      padding-left: 1.2em;
+      position: relative;
+    }
+    .match-reasons li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #19c97f;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+      <ul class="navbar-links">
+        <li><a href="/dashboard.html">Dashboard</a></li>
+        <li><a href="/wardrobe.html">Wardrobe</a></li>
+        <li><a href="/smart-shopping.html">Smart Shopping</a></li>
+        <li><a href="#" id="logout-btn">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <h1>🛍️ Smart Shopping Assistant</h1>
+    <p style="font-size: 1.05em; color: #666; margin-bottom: 1.5em;">
+      AI-powered recommendations based on your wardrobe gaps, style, and budget
+    </p>
+    
+    <div class="card" style="margin-bottom: 2em;">
+      <h3>What are you looking for?</h3>
+      
+      <div class="form-group">
+        <label class="form-label">Shopping Intent</label>
+        <input type="text" id="intent" class="form-control" placeholder="Ex: I need shoes for office">
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em;">
+        <div class="form-group">
+          <label class="form-label">Min Budget (₹)</label>
+          <input type="number" id="budget-min" class="form-control" value="1000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Budget (₹)</label>
+          <input type="number" id="budget-max" class="form-control" value="5000">
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em;">
+        <div class="form-group">
+          <label class="form-label">Style Preference</label>
+          <select id="style" class="form-control">
+            <option>Casual</option>
+            <option>Formal</option>
+            <option>Minimal</option>
+            <option>Korean</option>
+            <option>Western</option>
+            <option>Ethnic</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Color Preference</label>
+          <input type="text" id="color" class="form-control" placeholder="Ex: Black, Neutral">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Sustainability</label>
+        <select id="sustainability" class="form-control">
+          <option>Normal</option>
+          <option>Eco-preferred</option>
+          <option>Eco-only</option>
+        </select>
+      </div>
+      
+      <button class="btn btn-primary" id="search-btn">🔍 Find Smart Recommendations</button>
+    </div>
+    
+    <div id="output"></div>
+  </div>
+  
+  <script src="/js/main.js"></script>
+  <script>
+    // Inline JS to avoid path issues
+    document.getElementById('search-btn').onclick = async () => {
+        const intent = document.getElementById('intent').value.trim();
+        
+        if (!intent) {
+            alert("Please describe what you're looking for!");
+            return;
+        }
+        
+        document.getElementById('output').innerHTML = '<div class="alert alert-info">🔍 Analyzing your wardrobe and finding matches...</div>';
+        
+        try {
+            const res = await fetch('/api/smart-shopping/recommend', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${SmartStyle.getToken()}`
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    intent: intent,
+                    budget_min: parseInt(document.getElementById('budget-min').value),
+                    budget_max: parseInt(document.getElementById('budget-max').value),
+                    style_preference: document.getElementById('style').value,
+                    color_preference: document.getElementById('color').value || null,
+                    sustainability: document.getElementById('sustainability').value
+                })
+            });
+            
+            if (!res.ok) throw new Error('Smart shopping API failed');
+            const data = await res.json();
+            renderResults(data);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('output').innerHTML = '<div class="alert alert-danger">❌ Failed to load recommendations. Check console.</div>';
+        }
+    };
+
+    function renderResults(data) {
+        let html = '';
+        
+        if (data.gaps && data.gaps.length > 0) {
+            html += '<div><h2>🔍 Wardrobe Gap Analysis</h2>';
+            data.gaps.forEach(gap => {
+                html += `<div class="gap-card">⚠️ ${gap}</div>`;
+            });
+            html += '</div>';
+        }
+        
+        html += `
+            <div style="background: #f5f5f5; padding: 1em; border-radius: 8px; margin: 1.5em 0;">
+                <strong>Your Profile:</strong> Size ${data.user_context.size} | ${data.user_context.body_shape} | 
+                ${data.user_context.style} style | Budget: ${data.user_context.budget}
+            </div>
+        `;
+        
+        if (data.recommendations && data.recommendations.length > 0) {
+            html += '<div><h2>🎁 Smart Recommendations</h2><div style="display: flex; flex-wrap: wrap; gap: 1.5em;">';
+            
+            data.recommendations.forEach(prod => {
+                html += `
+                    <div class="product-card">
+                        <div class="match-badge">${prod.match_score}% Match</div>
+                        <img src="${prod.image}" alt="${prod.name}">
+                        ${prod.is_eco ? '<span class="eco-badge">♻️ Eco-Friendly</span>' : ''}
+                        <div style="font-weight: 600; margin-top: 0.8em; font-size: 0.95em;">${prod.name}</div>
+                        <div style="color: #666; font-size: 0.85em; margin-top: 0.3em;">${prod.brand}</div>
+                        <div style="color: #19c97f; font-size: 1.2em; margin-top: 0.5em; font-weight: 600;">${prod.price}</div>
+                        <div style="color: #666; font-size: 0.85em; margin-top: 0.25em;">⭐ ${prod.rating}</div>
+                        
+                        <ul class="match-reasons">
+                            ${prod.match_reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                        
+                        <a href="${prod.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="margin-top: 1em; display: block; text-align: center; text-decoration: none;">
+                            View on ${prod.store}
+                        </a>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+        }
+        
+        document.getElementById('output').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

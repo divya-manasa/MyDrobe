@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Outfit Suggestions - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .suggestions-display {
+            background: var(--color-surface);
+            border-radius: 20px;
+            padding: 2rem;
+            white-space: pre-wrap;
+            font-family: var(--font-family-base);
+            line-height: 1.8;
+            font-size: 1rem;
+            color: var(--color-text);
+            box-shadow: var(--shadow-lg);
+            max-width: 900px;
+            margin: 2rem auto;
+        }
+        
+        .form-inline {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        
+        .form-inline .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .event-icon {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="/outfit-suggestions.html">Outfit AI</a></li>
+                <li><a href="/analytics.html">Analytics</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                <span class="event-icon">✨</span>
+                AI Outfit Stylist
+            </h1>
+            <p style="font-size: 1.1rem; color: var(--slate-gray);">
+                Get personalized outfit suggestions powered by AI
+            </p>
+        </div>
+        
+        <!-- Event Input Form -->
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">📅 Tell us about your event</h3>
+            
+            <form id="event-form" onsubmit="generateSuggestions(event)">
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Event Type *</label>
+                        <select id="event-type" class="form-control" required>
+                            <option value="office">🏢 Office / Work</option>
+                            <option value="party">🎉 Party</option>
+                            <option value="wedding">💒 Wedding</option>
+                            <option value="date_night">💕 Date Night</option>
+                            <option value="gym">🏋️ Gym / Workout</option>
+                            <option value="travel">✈️ Travel</option>
+                            <option value="casual">👕 Casual Outing</option>
+                            <option value="formal">🎩 Formal Event</option>
+                            <option value="festival">🎊 Festival / Celebration</option>
+                            <option value="beach">🏖️ Beach / Outdoor</option>
+                            <option value="brunch">🥂 Brunch / Lunch</option>
+                            <option value="dinner">🍽️ Dinner</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Date *</label>
+                        <input type="date" id="event-date" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Time *</label>
+                        <input type="time" id="event-time" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Formality Level</label>
+                        <select id="formality" class="form-control">
+                            <option value="casual">Casual</option>
+                            <option value="smart_casual">Smart Casual</option>
+                            <option value="business_casual">Business Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="black_tie">Black Tie</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+            <label class="form-label">Gender *</label>
+            <select id="gender" class="form-control" required>
+                <option value="male">👔 Male</option>
+                <option value="female">👗 Female</option>
+                <option value="unisex">👕 Unisex</option>
+            </select>
+        </div>
+    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" id="city" class="form-control" value="Mumbai">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <input type="text" id="country" class="form-control" value="India">
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">
+                        Avoid Recently Worn Items
+                        <span style="color: var(--slate-gray); font-weight: normal; margin-left: 0.5rem;">
+                            (Don't suggest items worn in last N days)
+                        </span>
+                    </label>
+                    <input type="number" id="avoid-days" class="form-control" value="7" min="0" max="30" style="max-width: 150px;">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full-width" style="margin-top: 2rem; padding: 1rem; font-size: 1.1rem;">
+                    ✨ Generate AI Outfit Suggestions
+                </button>
+            </form>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading-state" style="display: none; text-align: center; padding: 3rem;">
+            <div class="spinner" style="width: 60px; height: 60px; margin: 0 auto 1rem;"></div>
+            <h3>🎨 AI Stylist is working on your outfits...</h3>
+            <p style="color: var(--slate-gray);">This may take a few seconds</p>
+        </div>
+        
+        <!-- Results Display -->
+        <div id="results-container" style="display: none;">
+            <div class="suggestions-display" id="suggestions-text"></div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/outfit-suggestions.js"></script>
+</body>
+</html>

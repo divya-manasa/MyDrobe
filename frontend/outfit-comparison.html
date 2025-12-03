@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfit Comparison - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>AI Outfit Comparison</h1>
+        <p>Compare two outfits and get AI-powered analysis</p>
+        
+        <div class="card">
+            <h3>Setup Comparison</h3>
+            <p>Select items from your wardrobe for each outfit, then let AI compare them</p>
+            
+            <div class="grid grid-2">
+                <div>
+                    <h4>Outfit 1</h4>
+                    <div class="form-group">
+                        <label class="form-label">Item IDs (comma-separated)</label>
+                        <input type="text" id="outfit1-items" class="form-control" placeholder="1, 2, 3">
+                    </div>
+                </div>
+                
+                <div>
+                    <h4>Outfit 2</h4>
+                    <div class="form-group">
+                        <label class="form-label">Item IDs (comma-separated)</label>
+                        <input type="text" id="outfit2-items" class="form-control" placeholder="4, 5, 6">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Occasion</label>
+                <select id="occasion" class="form-control">
+                    <option value="Casual">Casual</option>
+                    <option value="Office">Office</option>
+                    <option value="Party">Party</option>
+                    <option value="Date">Date Night</option>
+                    <option value="Wedding">Wedding</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="performComparison()">Compare Outfits</button>
+        </div>
+        
+        <div id="comparison-result"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/outfit.js"></script>
+    <script>
+        async function performComparison() {
+            const outfit1Input = document.getElementById('outfit1-items').value;
+            const outfit2Input = document.getElementById('outfit2-items').value;
+            const occasion = document.getElementById('occasion').value;
+            
+            if (!outfit1Input || !outfit2Input) {
+                SmartStyle.showAlert('Please enter item IDs for both outfits', 'error');
+                return;
+            }
+            
+            const outfit1Items = outfit1Input.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            const outfit2Items = outfit2Input.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            
+            if (outfit1Items.length === 0 || outfit2Items.length === 0) {
+                SmartStyle.showAlert('Please enter valid item IDs', 'error');
+                return;
+            }
+            
+            await compareOutfits(outfit1Items, outfit2Items, occasion);
+        }
+    </script>
+</body>
+</html>

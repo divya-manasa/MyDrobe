@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Coach - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Style Coach - Conversational Fashion Advisor</h1>
+        <p>Powered by IBM Granite 3.1 8B AI Model</p>
+        
+        <div class="grid grid-2">
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages"></div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" class="form-control chat-input" placeholder="Ask me anything about fashion...">
+                    <button class="btn btn-primary" id="send-btn">Send</button>
+                    <button class="btn btn-secondary" onclick="startVoiceChat()">🎤</button>
+                </div>
+            </div>
+            
+            <div>
+                <div class="card">
+                    <h3>Quick Fashion Tips</h3>
+                    <div id="quick-tips"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/chatbot.js"></script>
+</body>
+</html>

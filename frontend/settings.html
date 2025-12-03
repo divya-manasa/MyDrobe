@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Settings</h1>
+        
+        <div class="card">
+            <h3>Shopping Preferences</h3>
+            <form id="settings-form" onsubmit="event.preventDefault(); saveSettings();">
+                <div class="form-group">
+                    <label class="form-label">Eco-Friendly Preference</label>
+                    <select id="eco-preference" class="form-control">
+                        <option value="high">High - Show only sustainable brands</option>
+                        <option value="medium">Medium - Prefer eco-friendly options</option>
+                        <option value="low">Low - Show all options</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Min Price ($)</label>
+                        <input type="number" id="price-min" class="form-control" value="0" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Max Price ($)</label>
+                        <input type="number" id="price-max" class="form-control" value="1000" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Preferred Brands (comma-separated)</label>
+                    <input type="text" id="preferred-brands" class="form-control" placeholder="Nike, Zara, H&M">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3>Account Information</h3>
+            <div id="account-info"></div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function loadSettings() {
+            try {
+                const data = await SmartStyle.apiRequest('/api/profile/settings');
+                document.getElementById('eco-preference').value = data.eco_preference || 'medium';
+                document.getElementById('price-min').value = data.price_range.min || 0;
+                document.getElementById('price-max').value = data.price_range.max || 1000;
+                document.getElementById('preferred-brands').value = data.preferred_brands.join(', ') || '';
+            } catch (error) {
+                console.error('Failed to load settings');
+            }
+            
+            const user = SmartStyle.getUser();
+            if (user) {
+                document.getElementById('account-info').innerHTML = `
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Username:</strong> ${user.username}</p>
+                    <p><strong>Full Name:</strong> ${user.full_name || 'Not set'}</p>
+                `;
+            }
+        }
+        
+        async function saveSettings() {
+            const ecoPreference = document.getElementById('eco-preference').value;
+            const priceMin = parseFloat(document.getElementById('price-min').value);
+            const priceMax = parseFloat(document.getElementById('price-max').value);
+            const brandsInput = document.getElementById('preferred-brands').value;
+            const brands = brandsInput ? brandsInput.split(',').map(b => b.trim()) : [];
+            
+            SmartStyle.showLoading();
+            try {
+                await SmartStyle.apiRequest('/api/profile/update', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        eco_preference: ecoPreference,
+                        price_range_min: priceMin,
+                        price_range_max: priceMax,
+                        preferred_brands: brands
+                    })
+                });
+                
+                SmartStyle.showAlert('Settings saved successfully!', 'success');
+            } catch (error) {
+                SmartStyle.showAlert('Failed to save settings', 'error');
+            } finally {
+                SmartStyle.hideLoading();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

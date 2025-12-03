@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body Shape Analyzer - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Body Shape & Fit Analyzer</h1>
+        
+        <div class="card">
+            <h3>Enter Your Measurements</h3>
+            <form onsubmit="event.preventDefault(); analyzeMeasurements();">
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Bust (inches)</label>
+                        <input type="number" id="bust" class="form-control" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Waist (inches)</label>
+                        <input type="number" id="waist" class="form-control" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hips (inches)</label>
+                        <input type="number" id="hips" class="form-control" step="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Shoulder Width (inches)</label>
+                        <input type="number" id="shoulders" class="form-control" step="0.5">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Height (inches)</label>
+                        <input type="number" id="height" class="form-control" step="0.5">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Analyze Body Shape</button>
+            </form>
+        </div>
+        
+        <div id="analysis-results"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function analyzeMeasurements() {
+            const measurements = {
+                bust: parseFloat(document.getElementById('bust').value),
+                waist: parseFloat(document.getElementById('waist').value),
+                hips: parseFloat(document.getElementById('hips').value),
+                shoulders: parseFloat(document.getElementById('shoulders').value) || 0,
+                height: parseFloat(document.getElementById('height').value) || 0
+            };
+            
+            SmartStyle.showLoading();
+            try {
+                // Save measurements to profile
+                await SmartStyle.apiRequest('/api/profile/update', {
+                    method: 'PUT',
+                    body: JSON.stringify({ measurements })
+                });
+                
+                // Get AI analysis (simulated for now)
+                displayAnalysis(measurements);
+            } catch (error) {
+                SmartStyle.showAlert('Failed to analyze measurements', 'error');
+            } finally {
+                SmartStyle.hideLoading();
+            }
+        }
+        
+        function displayAnalysis(measurements) {
+            const { bust, waist, hips } = measurements;
+            
+            // Simple body shape determination
+            let bodyShape = 'Balanced';
+            let recommendations = [];
+            
+            if (Math.abs(bust - hips) < 4 && waist < bust - 9) {
+                bodyShape = 'Hourglass';
+                recommendations = [
+                    'Fitted tops that accentuate your waist',
+                    'Wrap dresses and belted styles',
+                    'High-waisted bottoms',
+                    'V-neck and sweetheart necklines'
+                ];
+            } else if (hips > bust + 4) {
+                bodyShape = 'Pear';
+                recommendations = [
+                    'Bright colors and patterns on top',
+                    'A-line skirts and wide-leg pants',
+                    'Structured shoulders and boat necks',
+                    'Dark colors on bottom'
+                ];
+            } else if (bust > hips + 4) {
+                bodyShape = 'Inverted Triangle';
+                recommendations = [
+                    'V-neck and scoop necklines',
+                    'A-line skirts and flared pants',
+                    'Avoid shoulder pads and puff sleeves',
+                    'Draw attention to lower body'
+                ];
+            } else if (Math.abs(bust - waist) < 9 && Math.abs(hips - waist) < 9) {
+                bodyShape = 'Rectangle';
+                recommendations = [
+                    'Create curves with layering',
+                    'Belts and peplum tops',
+                    'Ruffles and details at bust or hips',
+                    'Bootcut and flared jeans'
+                ];
+            }
+            
+            const container = document.getElementById('analysis-results');
+            container.innerHTML = `
+                <div class="card">
+                    <h3>Your Body Shape: ${bodyShape}</h3>
+                    <h4 class="mt-2">Flattering Styles for You:</h4>
+                    <ul>
+                        ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                    
+                    <h4 class="mt-2">Style Tips:</h4>
+                    <p>✓ Emphasize your best features</p>
+                    <p>✓ Balance proportions with strategic styling</p>
+                    <p>✓ Confidence is your best accessory!</p>
+                    
+                    <button class="btn btn-primary mt-2" onclick="window.location.href='/dashboard.html'">
+                        Back to Dashboard
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outfit Refresher - SmartStyle AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/dashboard.html" class="navbar-brand">SmartStyle AI</a>
+            <ul class="navbar-links">
+                <li><a href="/dashboard.html">Dashboard</a></li>
+                <li><a href="/wardrobe.html">Wardrobe</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>AI Outfit Refresher</h1>
+        <p>Discover new combinations from your existing wardrobe to avoid repetition</p>
+        
+        <div class="card">
+            <h3>Generate Fresh Outfit Combinations</h3>
+            <p>AI will create unique outfits you haven't worn recently</p>
+            <button class="btn btn-primary" onclick="refreshOutfits()">Refresh My Style</button>
+        </div>
+        
+        <div id="refresh-results"></div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        async function refreshOutfits() {
+            SmartStyle.showLoading();
+            try {
+                const data = await SmartStyle.apiRequest('/api/outfit/refresher');
+                displayRefreshResults(data);
+            } catch (error) {
+                SmartStyle.showAlert('Failed to generate outfit combinations', 'error');
+            } finally {
+                SmartStyle.hideLoading();
+            }
+        }
+        
+        function displayRefreshResults(data) {
+            const container = document.getElementById('refresh-results');
+            container.innerHTML = `
+                <div class="card">
+                    <h3>Fresh Outfit Ideas</h3>
+                    <p><strong>Available Items:</strong> ${data.available_items}</p>
+                    <div class="mt-2">
+                        <pre style="background: var(--mist-gray); padding: 1rem; border-radius: 8px; overflow-x: auto;">${data.suggestions}</pre>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
